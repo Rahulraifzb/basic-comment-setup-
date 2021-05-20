@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+{% load extra %}
+<div class="card shadow-sm mt-3">
+    <div class="card-body">
+        <h4>{{post.title}}</h4>
+        <p>{{post.content}}</p>
+    </div>
+</div>
+
+<div class="card mt-5">
+    <div class="card-header bg-primary text-light">
+        <h3>Comment:</h3>
+    </div>
+    <div class="card-body">
+        <form action="{% url 'post-comment' post.id %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="comment" id="comment" class="form-control" placeholder="Add a public comment..">
+            <input type="hidden" name="parentid" value="">
+            <input type="submit" class="btn btn-primary mt-2 btn-sm" value="Submit">
+        </form>
+    </div>
+</div>
+
+{% for comment in comments %}
+<div class="card mb-3 mt-3">
+    <div class="row g-0">
+        <div class="col-md-1 justify-content-center pt-2  d-flex">
+            <img src="{% static 'images/admin.png'%}" alt="Admin" class="  w-75 h-75 ">
+        </div>
+        <div class="col-md-11">
+            <div class="card-body">
+                <h5 class="card-title ">{{comment.user|title}} <span
+                        class="badge bg-secondary ">{{comment.time|naturaltime}}</span></h5>
+                <p class="card-text">{{comment.comment}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="row g-1 ">
+        <div class="col-md-1"></div>
+        <div class="col-md-11 p-3 pt-0">
+
+            {% for reply in replies|get_val:comment.id %}
+            <div class="card  mb-3 mt-3">
+                <div class="row g-0">
+                    <div class="col-md-1 justify-content-center pt-2  d-flex">
+                        <img src="{% static 'images/admin.png'%}" alt="Admin" class="  w-75 h-75 ">
+                    </div>
+                    <div class="col-md-11">
+                        <div class="card-body">
+                            <h5 class="card-title ">{{reply.user.username|title}} <span
+                                    class="badge bg-secondary ">{{reply.time|naturaltime}}</span></h5>
+                            <p class="card-text">{{reply.comment}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Reply Section Start -->
+            <button class="btn btn-sm btn-outline-danger " data-bs-toggle="collapse"
+                href="#collapseExample{{comment.id}}" role="button" aria-expanded="false"
+                aria-controls="collapseExample{{comment.id}}">Reply</button>
+
+            <div class="collapse mt-2" id="collapseExample{{comment.id}}">
+                <div class="card card-body">
+                    <form action="{% url 'post-comment' post.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="text" name="comment" id="comment" class="form-control"
+                            placeholder="Add a public reply... ">
+                        <input type="hidden" name="parentid" value="{{comment.id}}">
+                        <input type="submit" class="btn btn-primary mt-2 btn-sm" value="Submit">
+                    </form>
+                </div>
+            </div>
+            <!-- Reply Section End -->
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock content %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+        <h4>Home Page!</h4>
+
+        {% for post in posts %}
+        <div class="card mt-3">
+            <div class="card-body">
+                <h2 class="card-title"><a href="{% url 'post-detail' post.id %}"class="text-decoration-none text-secondary">{{post.title}}</a></h2>
+                <p class="card-text">{{post.content}}</p>
+            </div>
+        </div>
+        {% endfor %}
+{% endblock content %}
+ 
